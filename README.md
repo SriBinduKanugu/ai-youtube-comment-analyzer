@@ -54,19 +54,32 @@ AI-Youtube-comment-analyzer/
 ```bash
 git clone https://github.com/YOUR-USERNAME/ai-youtube-comment-analyzer.git
 
-Install the required libraries
+Open the project folder
+cd ai-youtube-comment-analyzer
+3. Install the required libraries
 pip install -r requirements.txt
-Create a .env file and add your YouTube API key
+4. Create a .env file
+
+Create a .env file in the project folder and add your YouTube API key:
+
 YOUTUBE_API_KEY=your_api_key_here
-Run the application
+
+Do not upload the .env file to GitHub.
+
+5. Run the application
 streamlit run app.py
-Enter a YouTube video URL and click Send.
+6. Analyze a YouTube video
+
+Enter a YouTube video URL in the application and click Send.
+
 Future Improvements
-Fetch more comments using API pagination
-Improve sentiment analysis
+Fetch more comments using YouTube API pagination
+Improve sentiment analysis for slang and emojis
 Add keyword and topic analysis
 Add more interactive visualizations
 Deploy the application online
 Author
 
 Sri Bindu Kanugu
+
+B.Tech – Computer Science and Engineering (Data Science)
