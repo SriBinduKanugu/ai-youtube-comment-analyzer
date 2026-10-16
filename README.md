@@ -12,6 +12,15 @@ A Python-based application that analyzes YouTube comments and helps understand a
 - Analyze likes and comment length
 - Interactive Streamlit dashboard
 - Analyze different YouTube videos using their URLs
+  ##requirements.txt
+  
+streamlit
+pandas
+matplotlib
+google-api-python-client
+python-dotenv
+vaderSentiment
+
 
 ## Technologies Used
 
