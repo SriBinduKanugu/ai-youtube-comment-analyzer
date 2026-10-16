@@ -1,3 +1,4 @@
+
 from googleapiclient.discovery import build
 from dotenv import load_dotenv
 from urllib.parse import urlparse, parse_qs
@@ -5,18 +6,17 @@ import os
 import pandas as pd
 
 
-# ============================================================
 # LOAD API KEY
-# ============================================================
 
 load_dotenv()
 
 API_KEY = os.getenv("YOUTUBE_API_KEY")
 
+if not API_KEY:
+    raise ValueError("YouTube API key not found in .env file")
 
-# ============================================================
+
 # CONNECT TO YOUTUBE API
-# ============================================================
 
 youtube = build(
     "youtube",
@@ -25,9 +25,7 @@ youtube = build(
 )
 
 
-# ============================================================
 # EXTRACT VIDEO ID
-# ============================================================
 
 def get_video_id(url):
 
@@ -41,7 +39,7 @@ def get_video_id(url):
 
     elif "youtu.be" in parsed_url.netloc:
 
-        video_id = parsed_url.path[1:]
+        video_id = parsed_url.path.strip("/")
 
     else:
 
@@ -50,9 +48,7 @@ def get_video_id(url):
     return video_id
 
 
-# ============================================================
-# FETCH COMMENTS
-# ============================================================
+# FETCH COMMENTS WITH PAGINATION
 
 def fetch_comments(url):
 
@@ -61,45 +57,46 @@ def fetch_comments(url):
     if not video_id:
         raise ValueError("Invalid YouTube URL")
 
-    request = youtube.commentThreads().list(
-        part="snippet",
-        videoId=video_id,
-        maxResults=100
-    )
-
-    response = request.execute()
-
     comments_data = []
+    next_page_token = None
 
-    for item in response.get("items", []):
+    while True:
 
-        snippet = item[
-            "snippet"
-        ][
-            "topLevelComment"
-        ][
-            "snippet"
-        ]
+        request = youtube.commentThreads().list(
+            part="snippet",
+            videoId=video_id,
+            maxResults=100,
+            pageToken=next_page_token
+        )
 
-        comments_data.append({
+        response = request.execute()
 
-            "Author": snippet[
-                "authorDisplayName"
-            ],
+        for item in response.get("items", []):
 
-            "Comment": snippet[
-                "textOriginal"
-            ],
-
-            "Likes": snippet[
-                "likeCount"
-            ],
-
-            "Published": snippet[
-                "publishedAt"
+            snippet = item[
+                "snippet"
+            ][
+                "topLevelComment"
+            ][
+                "snippet"
             ]
 
-        })
+            comments_data.append({
+
+                "Author": snippet["authorDisplayName"],
+
+                "Comment": snippet["textOriginal"],
+
+                "Likes": snippet["likeCount"],
+
+                "Published": snippet["publishedAt"]
+
+            })
+
+        next_page_token = response.get("nextPageToken")
+
+        if not next_page_token:
+            break
 
     if not comments_data:
 
@@ -107,14 +104,19 @@ def fetch_comments(url):
             "No comments found for this video."
         )
 
-    df = pd.DataFrame(
-        comments_data
-    )
+    df = pd.DataFrame(comments_data)
 
-    # Save fresh comments
+    # CREATE DATA FOLDER IF NEEDED
+
+    os.makedirs("data", exist_ok=True)
+
+    # SAVE COMMENTS
+
     df.to_csv(
         "data/youtube_comments.csv",
         index=False
     )
+
+    print("Total comments fetched:", len(df))
 
     return df

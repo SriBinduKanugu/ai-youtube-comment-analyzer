@@ -1,0 +1,7 @@
+streamlit
+pandas
+matplotlib
+vaderSentiment
+google-api-python-client
+python-dotenv
+    

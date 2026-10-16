@@ -145,6 +145,27 @@ div.stButton > button:hover {
     font-size: 15px;
     color: #555555;
 }
+/* Hide Streamlit toolbar and menu */
+[data-testid="stToolbar"] {
+    visibility: hidden;
+    height: 0%;
+    position: fixed;
+}
+
+/* Hide the Deploy button */
+.stDeployButton {
+    display: none;
+}
+
+/* Hide the footer */
+footer {
+    visibility: hidden;
+}
+
+/* Hide the header space */
+[data-testid="stHeader"] {
+    background: transparent;
+}
 
 </style>
 """, unsafe_allow_html=True)
